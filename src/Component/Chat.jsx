@@ -13,21 +13,24 @@ function Chat({ room, name }) {
   // const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const ENDPOINT = 'http://localhost:5000'; //specify http/https
+  const ENDPOINT = 'http://localhost:5000/chat'; //specify http/https
   const location = useLocation();
 
   useEffect(() => {
+    
     socket = io(ENDPOINT);
     console.log("Location:", location);
     const queryParams = new URLSearchParams(location.search);
     const room = queryParams.get('room');
     const name = queryParams.get('name');
-    console.log('Parsed Query String:', room, name); // Log parsed query parameters
+    console.log('Parsed Query String:', name, room); // Log parsed query parameters WE HAVE them here...
 
     // setName(name);
     // setRoom(room);
 
-    socket.emit('join', name, room, (error) => {
+    socket.emit('join', name, room,
+  
+    (error) => {
       console.log("Final Room on emit", room);
       if (error) {
         console.error(error); // Handle error
@@ -38,7 +41,7 @@ function Chat({ room, name }) {
       socket.disconnect();
       // socket.off();
     }
-  }, [ENDPOINT, location.search]);
+  }, [ENDPOINT, location.search, location]);
 
   useEffect(() => {
     socket.on('message', (message) => {
