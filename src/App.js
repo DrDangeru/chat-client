@@ -1,24 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Join from './Component/Join';
+import Chat from './Component/Chat';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {/* <div>Welcome to Chat</div> */}
+      <Router>
+        {/* <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/chat">Chat</Link>
+            </li>
+          </ul>
+        </nav> */}
+        <Routes>
+          <Route path="/" element={<Join />} />
+          <Route path="/chat" element={<Chat />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
