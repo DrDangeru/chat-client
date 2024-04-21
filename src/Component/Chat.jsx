@@ -1,75 +1,84 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation , location } from 'react-router-dom';
-import queryString from 'query-string';
-import { io } from "socket.io-client";
-import './Chat.css';
+import { useLocation } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import './Chat.css'; 
 import InfoBar from './InfoBar/InfoBar';
-import Input from './Input/Input';
+ 
 
-
-let socket;
-
-function Chat({ room, name }) {
-  // const [name, setName] = useState('');
-  // const [room, setRoom] = useState('');
+function Chat() {
+  const ENDPOINT = 'http://localhost:5000';
+  const socket = io(ENDPOINT);
+  const [name, setName] = useState(''); // Define room state
+  const [room, setRoom] = useState(''); // Define room state
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const ENDPOINT = 'http://localhost:5000'; //specify http/https
   const location = useLocation();
-
-  useEffect(() => {
+  // io.on('broadcast', data =>{
+  //   alert('this is brdcst', data)
+  //  })
   
-    console.log('First use effect in chat.jsx')
-    socket = io(ENDPOINT);
+  useEffect(() => {
+    const socket = io(ENDPOINT);
     const queryParams = new URLSearchParams(location.search);
-        console.log(location,' this is location')
-    const room = queryParams.get('room');
+    const roomParam = queryParams.get('room');
     const name = queryParams.get('name');
-    console.log('Parsed Query String:', name, room); // Log parsed query parameters WE HAVE them here... and avail no need for setname & room
+    setRoom(roomParam); // Set room state
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      socket.emit('join', { name, room: roomParam }, (error) => {
+        if (error) console.error(error);
+      });
+    });
 
-    socket.on('connect', () =>{
-
-    console.log('You connected '  )
-
-    console.log(location,' this is location')
-    
-    socket.emit('join', name, room ,error => { // removed error
-      console.log("Final Room on emit", room);
-      if (error) {
-        console.error(error); // Handle error
-      }
-    })})
-
-    return () => {
-      socket.disconnect();
-      // socket.off();
-    }
-  }, [ENDPOINT, location.search, location]);
+    // return () => {
+    //   socket.disconnect();
+    // };
+  }, [ENDPOINT,location, location.search]);
 
   useEffect(() => {
+    const socket = io(ENDPOINT);
     socket.on('message', (message) => {
-      setMessages([...messages, message]);
+      setMessages((prevMessages) => [...prevMessages, message]);
+      console.log('setting msg client side in msgs')
     });
-  }, [messages]);
+    return () => socket.disconnect();
+  }, [ENDPOINT ]);
 
-  const sendMessage = (event) => {
+  const sendMessage = (event, name) => {
+    const socket = io(ENDPOINT);
     event.preventDefault();
-    if (message.trim()) {
-      socket.emit('sendMessage', message, () => setMessage(''));
+    if (message) {
+      socket.emit('sendMessage', 
+      {message: message, user: name, room:room}, () => setMessage(''));
     }
-  }
+  };
 
- 
+  console.log(message,messages,' these are the msgs ')
+
   return (
     <>
-      <InfoBar room={room} /> {/* Convert room object to string */}
-      <div className='outerContainer'>
-        <div className='container'>
-          <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
-        </div>
-      </div>
+      {room ? (
+        <>
+          <InfoBar room={room} />
+          <div className="outerContainer">
+            <div className="container">
+              <input
+                type="text"
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                onKeyDown={(event) => (event.key === 'Enter' ? sendMessage(event) : null)}
+              />
+              <button type="submit" onClick={sendMessage}>
+                Send
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div>Error: Room is undefined</div>
+      )}
     </>
-  )
+  );
 }
 
 export default Chat;

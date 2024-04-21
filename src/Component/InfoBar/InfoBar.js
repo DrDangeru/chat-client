@@ -2,6 +2,7 @@ import React from 'react'
 import './InfoBar.css';
 import closeIcon from '../../icons/closeIcon.png';
 import onlineIcon from '../../icons/onlineIcon.png';
+// import * as {room,name} from 'Join.js';
 
 
 function InfoBar(room) {
