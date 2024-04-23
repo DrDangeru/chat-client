@@ -1,13 +1,13 @@
 import React from 'react'
-// import closeIcon from '../../icons/closeIcon.png'
-// import onlineIcon from '../../icons/onlineIcon.png'
 import './Input.css';
 import InfoBar from '../InfoBar/InfoBar';
 import room from '../InfoBar/InfoBar'
 
 
 const Input = ({ message, setMessage, sendMessage }) => {
+
   <form className='form'>
+    event.preventDefault();
     <input className='input'
       type='text'
       placeholder='Type a message'

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import './Chat.css'; 
+import { socket } from './socket';
 import InfoBar from './InfoBar/InfoBar';
- 
+import Input from './Input/Input.js';
+import Messages from './Messages/Messages.js';
 
 function Chat() {
   const ENDPOINT = 'http://localhost:5000';
@@ -17,49 +19,47 @@ function Chat() {
   //   alert('this is brdcst', data)
   //  })
   
-  useEffect(() => {
-    const socket = io(ENDPOINT);
-    const queryParams = new URLSearchParams(location.search);
-    const roomParam = queryParams.get('room');
-    const name = queryParams.get('name');
-    setRoom(roomParam); // Set room state
-    socket.on('connect', () => {
-      console.log('Connected to server');
-      socket.emit('join', { name, room: roomParam }, (error) => {
-        if (error) console.error(error);
-      });
+useEffect(() => {
+  const queryParams = new URLSearchParams(location.search);
+  const roomParam = queryParams.get('room');
+  const name = queryParams.get('name');
+  setRoom(roomParam);
+setName(name);
+  socket.on('connect', () => {
+    console.log('Connected to server');
+    socket.emit('join', { name, room: roomParam }, (error) => {
+      if (error) console.error(error);
     });
+  });
 
-    // return () => {
-    //   socket.disconnect();
-    // };
-  }, [ENDPOINT,location, location.search]);
-
-  useEffect(() => {
-    const socket = io(ENDPOINT);
-    socket.on('message', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-      console.log('setting msg client side in msgs')
-    });
-    return () => socket.disconnect();
-  }, [ENDPOINT ]);
-
-  const sendMessage = (event, name) => {
-    const socket = io(ENDPOINT);
-    event.preventDefault();
-    if (message) {
-      socket.emit('sendMessage', 
-      {message: message, user: name, room:room}, () => setMessage(''));
-    }
+  return () => {
+    socket.disconnect();
   };
+}, [socket, location, location.search]);
 
-  console.log(message,messages,' these are the msgs ')
+useEffect(() => {
+  console.log('Connected to sendMessage effect' );
+  socket.on('sendMessage', (message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+    console.log('setting msg client side in msgs')
+  });
+}, [message]);
 
-  return (
-    <>
-      {room ? (
-        <>
-          <InfoBar room={room} />
+const sendMessage = (event, name) => {
+  event.preventDefault();
+  if (message) {
+    socket.emit('sendMessage', { message: message, user: name, room: room }, () => setMessage(''));
+  }
+};
+
+console.log(message, name, 'these are the msg ')
+console.log(messages, name, 'these are the msgs ')
+return (
+  <>
+    {room ? (
+      <>
+        <InfoBar room={room} />
+        <div>
           <div className="outerContainer">
             <div className="container">
               <input
@@ -72,13 +72,19 @@ function Chat() {
                 Send
               </button>
             </div>
-          </div>
-        </>
-      ) : (
-        <div>Error: Room is undefined</div>
-      )}
-    </>
-  );
+            {/* <Input message={message} setMessage={setMessage} sendMessage={sendMessage} /> */}
+          </div> 
+          {/* <Messages messages={messages} /> */}
+           {messages.map((message, idx) => 
+           <div key={idx}>
+          <div message={message} name={name} />msg here</div>)}
+        </div>
+      </>
+    ) : (
+      <div>Error: Room is undefined</div>
+    )}
+  </>
+);
 }
 
 export default Chat;
