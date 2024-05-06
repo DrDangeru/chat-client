@@ -1,0 +1,38 @@
+.infoBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+
+}
+
+.headin {
+  flex: 1; /* Take up remaining space */
+  text-align: center; /* Center the text */
+  font-weight: 1000;
+  font-style: italic;
+ 
+}
+
+/* input{
+border: 3px rgb(22, 27, 6);
+} */
+
+.rightInnerContainer {
+  display: flex;
+  gap: 20px;
+    min-width: 140px;
+  align-items: center;
+    border: 6px solid rgb(218, 175, 175);
+  border-radius: 10px;
+}
+
+.leftInnerContainer {
+  display: flex;
+  min-width: 140px;
+  gap: 20px;
+  align-items: center;
+    border: 6px solid rgb(218, 175, 175);
+  border-radius: 10px;
+}
+

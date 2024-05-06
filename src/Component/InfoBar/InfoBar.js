@@ -6,17 +6,28 @@ import onlineIcon from '../../icons/onlineIcon.png';
 
 function InfoBar(room) {
   return (
-    < div className='infoBar' > InfoBar
-      < div className='leftInnerContainer' >
-        <img className='onlineIcon' src={onlineIcon} />
-        <h3>Welcome to {room.room}</h3>
-      </div >
-      <div className='rightInnerContainer'>
-        <a href='/'><img src={closeIcon} alt='close image' />
+    <>
+      <h2 className='headin'>Welcome to {room.room}</h2>
+      < div className='infoBar' >
+
+
+        < div className='leftInnerContainer' >
+          <div>
+            <img className='onlineIcon' src={onlineIcon} />
+            <img className='onlineIcon' src={onlineIcon} />
+            <img className='onlineIcon' src={onlineIcon} />
+            <img className='onlineIcon' src={onlineIcon} />
+            <img className='onlineIcon' src={onlineIcon} />
+            <div>Online</div>
+          </div>
+        </div >
+
+        <a className='rightInnerContainer' href='/'><img src={closeIcon} alt='close image' />
+          <div>Exit Room</div>
           {/* full page refresh ^ Exits room/resets name */}
         </a>
       </div>
-    </div >
+    </>
   )
 }
 
