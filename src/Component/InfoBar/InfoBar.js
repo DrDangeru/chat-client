@@ -2,12 +2,12 @@ import React from 'react'
 import './InfoBar.css';
 import closeIcon from '../../icons/closeIcon.png';
 import onlineIcon from '../../icons/onlineIcon.png';
-// import * as {room,name} from 'Join.js';
 
-function InfoBar(room) {
+
+function InfoBar(room, name) {
   return (
     <>
-      <h2 className='headin'>Welcome to {room.room}</h2>
+      <h2 className='headin'>Welcome to {room.room},{room.name}!</h2>
       < div className='infoBar' >
 
 

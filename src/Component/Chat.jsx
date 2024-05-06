@@ -26,9 +26,8 @@ function Chat() {
     setRoom(roomParam);
     setName(name);
   
-    socket.on('connect', (socket) => {
+    socket.on('connect', () => { // (socket)
         console.log('Connected to server');
-     
     socket.io.on("error", (error) => {
   console.log(error);
   });
@@ -48,28 +47,24 @@ function Chat() {
       console.log('Connected to server', name, roomParam);
     },[name,room]);
 
-
   useEffect(() => {
- socket.on('message', (message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
-  });
-}, []);
+    socket.on('message', (message) => {
+      console.log('Incoming message in client:', message);
+      setMessages((prevMessages) => [...prevMessages, { 
+        user: message.user,
+        text: message.text,
+      }]);
+    });
+  }, []);
 
+  const sendMessage = (event) => {
+    event.preventDefault();
+    socket.emit('sendMessage', {message,name,room}, () => {
+      console.log('Message sent:', message);
+      setMessage('');
+    });
+  };
 
-const sendMessage = (event) => {
-  event.preventDefault();
-  console.log('Sending message', message, name, room);
-  // let newMessage = `${message.name}: ${message}`;
-  setMessages((prevMessages) => [...prevMessages, { user: name, 
-    text: message }]);
-  console.log('b4 socket emit msg');
-  socket.emit('sendMessage', { message, name, room });
-  console.log('after socket emit msg');
-  setMessage('');
-
-};
-
-  console.log(message, name, 'Msg is saved on tsx client side');
   console.log(messages, name, `these are the msgs/appear 
   correct, except empty/undefined array`);
 
