@@ -36,7 +36,7 @@ function Chat() {
     //    return () => {
     //   socket.disconnect();
     // }; dont think its needed and may cause unexpc behavior
-  }, [location.search, socket]);
+  }, []);//location.search, socket
 
  useEffect(() => {
   const queryParams = new URLSearchParams(location.search);
@@ -55,51 +55,47 @@ function Chat() {
         room: message.room,
         user: message.user,
         text: message.text,
-        type : 'file',
-        body : file | null,
-        mimeType : file?.type | null,
-        fileName : file?.name | null,
+        type : 'file' | null,
+        body : message.body | null,
+        mimeType : message.type | null,
+        fileName : message.name | null,
       }]);
     });
-  }, [messages]);// message
+    // renderMessage(messages);
+  }, []);// event listener so no retrigger needed
 
   // Connecting user needs to have the messages copied and set as his msgs
+  // these are in the messages array
 const sendMessage = (event) => {
   event.preventDefault();
   let messageObj = {};
-  //   name: name,
-  //   room: room,
-  //   text: message
-  // };
-
-  if (file) {
-    messageObj = {
-      message: message,
+  if (!file) {
+     messageObj = {
       name: name,
+      message: message,
       room: room, 
-      type: 'file',
-      body: file,
-      mimeType: file.type,
-      fileName: file.name,
+    };
+    setMessage('');
+    
+  } else {
+   messageObj = {
+    name: name,
+    room : room,
+    message: message,
+    type: 'file' , // type : type in server
+    body: file,
+    mimeType: file.type,
+    fileName: file.name,
     };
     setFile('');
-  } else {
-    messageObj = {
-      message: message,
-      name: name,
-      room: room, 
-  
-    };
     setMessage('');
   }
 
   document.getElementById("fileInput").value = "";
-
-  socket.emit('sendMessage', messageObj, () => {
+  socket.emit('message', messageObj, () => {
     console.log('Message sent:', messageObj);
   });
 };
-
 
 const selectFile = (event) => {
   const selectedFile = event.target.files[0];
@@ -107,8 +103,9 @@ const selectFile = (event) => {
   setFile(selectedFile);
 }
 
-function renderMessage(message, index) {
-  if ( message.body) { // message.type === 'file' &&
+function renderMessage (message, index) {
+  {console.log('message in render', message)}
+  if ( message.body != 0 && message.type ==='file' ) { 
     const blob = new Blob([message.body], { type: message.mimeType });
     return (
       <div key={index} style={{ backgroundColor: message.user === name ? '#bdf0f0' : '#e8b3d1', textAlign: message.user === name ? 'left' : 'right' }}>
@@ -126,9 +123,9 @@ function renderMessage(message, index) {
      return null; // Return null if neither file nor text message is present
    }
 }
-
-
-  console.log(messages, name, `these are the msgs/appear 
+ 
+  console.log(message);
+  console.log(messages, `these are the msgs/appear 
   correct, except empty/undefined array`);
 
   return (
