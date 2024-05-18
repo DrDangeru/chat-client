@@ -55,10 +55,10 @@ function Chat() {
         room: message.room,
         user: message.user,
         text: message.text,
-        type : 'file' | null,
-        body : message.body | null,
-        mimeType : message.type | null,
-        fileName : message.name | null,
+        type : 'file' || null,
+        body : message.body || null,
+        mimeType : message.fileType || null,
+        fileName : message.fileName || null,
       }]);
     });
     // renderMessage(messages);
