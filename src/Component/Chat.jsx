@@ -18,6 +18,7 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const location = useLocation();
   const [file, setFile] = useState();
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     console.log('chat started');
@@ -103,6 +104,15 @@ const selectFile = (event) => {
   setFile(selectedFile);
 }
 
+// Search by date and name in db
+function sendSearch(searchText) {
+  let date = searchText.slice(0,9);
+  let name = searchText.slice(10,30).trim();
+  socket.emit('search', (date,name), () => {
+  console.log('Search sent:', date, name);
+})
+}
+
 function renderMessage (message, index) {
   {console.log('message in render', message)}
   if ( message.body != 0 && message.type ==='file' ) { 
@@ -152,7 +162,17 @@ function renderMessage (message, index) {
                  <input id='fileInput' type="file" onChange={selectFile} /> 
                </div> 
               </div>
-
+              <div> Please enter the search term in format('YYYY-MM-DD') and the user who's messages to return
+                  <input
+                  name='searchText'
+                  type="text"
+                  maxLength="30"
+                  value={searchText}
+                  onChange={(event) => setSearchText(event.target.value)}
+                  onKeyDown={(event) => (event.key === 'Enter' ?
+                    sendSearch(event) : null)}
+                />
+                  </div>
             <div>
               <div className='chatMessages'>
                {messages.map((message, idx) => renderMessage(message, idx))}

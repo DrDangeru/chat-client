@@ -65,3 +65,7 @@ button{
   font-size: 18px;
 
 }
+/* 
+theme picker 
+:root.light { --dark-mode: 0; color-scheme: light; } 
+:root.dark { --dark-mode: 1; color-scheme: dark; } */
