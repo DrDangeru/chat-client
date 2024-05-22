@@ -19,6 +19,7 @@ function Chat() {
   const location = useLocation();
   const [file, setFile] = useState();
   const [searchText, setSearchText] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     console.log('chat started');
@@ -29,15 +30,25 @@ function Chat() {
     setName(name);
     
     socket.on('connect', () => { // (socket)
-        console.log('Connected to server');
+        console.log('Connected to server')})
     socket.io.on("error", (error) => {
   console.log(error);
-  });
- });
-    //    return () => {
-    //   socket.disconnect();
-    // }; dont think its needed and may cause unexpc behavior
-  }, []);//location.search, socket
+  })
+ ,[]})
+
+  useEffect(() => {
+   socket.on('searchResults', (results) => {
+      console.log('Search results:', results);
+      setSearchResults((prevResults) => ([...prevResults, { 
+     date: results.date, 
+     room: results.room,
+     name: results.name,
+     message: results.message
+    }]));
+    //     return () => {
+    //    socket.disconnect();
+    //  }; //dont think its needed and may cause unexpc behavior
+  }, [])})//,  location.search
 
  useEffect(() => {
   const queryParams = new URLSearchParams(location.search);
@@ -56,7 +67,7 @@ function Chat() {
         room: message.room,
         user: message.user,
         text: message.text,
-        type : 'file' || null,
+        type : message.type,
         body : message.body || null,
         mimeType : message.fileType || null,
         fileName : message.fileName || null,
@@ -65,16 +76,18 @@ function Chat() {
     // renderMessage(messages);
   }, []);// event listener so no retrigger needed
 
+ 
   // Connecting user needs to have the messages copied and set as his msgs
   // these are in the messages array
 const sendMessage = (event) => {
   event.preventDefault();
   let messageObj = {};
-  if (!file) {
+  if (!file) { // !file
      messageObj = {
       name: name,
       message: message,
-      room: room, 
+      room: room,
+      type: 'text' 
     };
     setMessage('');
     
@@ -105,13 +118,14 @@ const selectFile = (event) => {
 }
 
 // Search by date and name in db
-function sendSearch(searchText) {
-  let date = searchText.slice(0,9);
-  let name = searchText.slice(10,30).trim();
-  socket.emit('search', (date,name), () => {
-  console.log('Search sent:', date, name);
-})
+function sendSearch() {
+  // Split the searchText to get date and name
+  const [date, name] = searchText.split(' ').map(part => part.trim());
+  socket.emit('search', { date, name }, () => {
+    console.log('Search sent:', date, name);
+  });
 }
+
 
 function renderMessage (message, index) {
   {console.log('message in render', message)}
@@ -134,10 +148,6 @@ function renderMessage (message, index) {
    }
 }
  
-  console.log(message);
-  console.log(messages, `these are the msgs/appear 
-  correct, except empty/undefined array`);
-
   return (
     <>
       {room ? (
@@ -169,15 +179,30 @@ function renderMessage (message, index) {
                   maxLength="30"
                   value={searchText}
                   onChange={(event) => setSearchText(event.target.value)}
-                  onKeyDown={(event) => (event.key === 'Enter' ?
-                    sendSearch(event) : null)}
-                />
+  onKeyDown={(event) => {
+    if (event.key === 'Enter') {
+      sendSearch(); // Call sendSearch without passing the event
+    }
+  }}
+/>
                   </div>
+                   <button type="submit" onClick={(event) => sendSearch(event.target.value)}>
+                  Send Search
+              </button>
             <div>
               <div className='chatMessages'>
                {messages.map((message, idx) => renderMessage(message, idx))}
               </div>
             </div>
+            <div className='searchResults'>
+                <h3>Search Results:</h3>
+                {console.log(searchResults, 'searchResults rsvd')}
+                {searchResults.map((result, idx) => (
+                  <div key={idx}>
+                    {result.date}: {result.room} : {result.name}
+                  </div>
+                ))}
+              </div>
           </div>
           </div> 
         </>
@@ -185,7 +210,7 @@ function renderMessage (message, index) {
         <div>Error: Room is undefined</div>
       )}
     </>
-  );
+  )
 }
 
 export default Chat;
