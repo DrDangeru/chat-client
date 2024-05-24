@@ -7,19 +7,30 @@ import InfoBar from './InfoBar/InfoBar';
 // import Messages from './Messages/Messages.js';
 import Image from './Image/image.js'
 // import { render } from '@testing-library/react';
-
+/* eslint-disable no-unused-expressions */
 
 function Chat() {
+  const location = useLocation();
   const ENDPOINT = 'http://localhost:5000';
   const socket = io(ENDPOINT); 
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const location = useLocation();
   const [file, setFile] = useState();
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+
+   useEffect(() => {
+    socket.on('searchResults', (searchResul) => {
+      console.log('Search res client side:', searchResul);
+      setSearchResults(searchResul);
+    });
+
+    // return () => {
+    //   socket.off('searchResults');
+    // };
+  }, []);
 
   useEffect(() => {
     console.log('chat started');
@@ -28,28 +39,16 @@ function Chat() {
     const name = queryParams.get('name');
     setRoom(roomParam);
     setName(name);
-    
-    socket.on('connect', () => { // (socket)
-        console.log('Connected to server')})
-    socket.io.on("error", (error) => {
-  console.log(error);
-  })
+       socket.on('connect', () => { 
+      // alert('chat connected');
+       console.log('Connected/reconnected to server')})
+        
+     socket.on("error", (error) => {
+   console.log(error);})
+      
+
  ,[]})
-
-  useEffect(() => {
-   socket.on('searchResults', (results) => {
-      console.log('Search results:', results);
-      setSearchResults((prevResults) => ([...prevResults, { 
-     date: results.date, 
-     room: results.room,
-     name: results.name,
-     message: results.message
-    }]));
-    //     return () => {
-    //    socket.disconnect();
-    //  }; //dont think its needed and may cause unexpc behavior
-  }, [])})//,  location.search
-
+    
  useEffect(() => {
   const queryParams = new URLSearchParams(location.search);
   const roomParam = queryParams.get('room');
@@ -120,15 +119,17 @@ const selectFile = (event) => {
 // Search by date and name in db
 function sendSearch() {
   // Split the searchText to get date and name
-  const [date, name] = searchText.split(' ').map(part => part.trim());
-  socket.emit('search', { date, name }, () => {
+  
+  const [date, name ] = searchText.split(' ').map(part => 
+    part.trim());
+  socket.emit('search', { date, name , room, message }, () => {
     console.log('Search sent:', date, name);
   });
 }
 
 
 function renderMessage (message, index) {
-  {console.log('message in render', message)}
+  // {console.log('message in render', message)}
   if ( message.body != 0 && message.type ==='file' ) { 
     const blob = new Blob([message.body], { type: message.mimeType });
     return (
@@ -196,10 +197,13 @@ function renderMessage (message, index) {
             </div>
             <div className='searchResults'>
                 <h3>Search Results:</h3>
-                {console.log(searchResults, 'searchResults rsvd')}
+                {/* {console.log(searchResults, 'searchResults rsvd')} */}
                 {searchResults.map((result, idx) => (
                   <div key={idx}>
-                    {result.date}: {result.room} : {result.name}
+                    <div> {result.date}  </div> 
+                    <div> {result.room}  </div>
+                    <div> {result.name} </div> 
+                    <div>  {result.message}  </div>
                   </div>
                 ))}
               </div>
