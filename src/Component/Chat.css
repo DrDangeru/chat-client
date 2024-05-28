@@ -65,6 +65,10 @@ button{
   font-size: 18px;
 
 }
+
+.searchResults{
+  display: flex;
+}
 /* 
 theme picker 
 :root.light { --dark-mode: 0; color-scheme: light; } 

@@ -4,10 +4,10 @@ import closeIcon from '../../icons/closeIcon.png';
 import onlineIcon from '../../icons/onlineIcon.png';
 
 
-function InfoBar(room, name) {
+function InfoBar({ room, name }) {
   return (
     <>
-      <h2 className='headin'>Welcome to {room.room},{room.name}!</h2>
+      <h2 className='headin'>Welcome to {room},{name}!</h2>
       < div className='infoBar' >
 
 

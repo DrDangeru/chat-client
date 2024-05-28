@@ -45,31 +45,7 @@ function Chat() {
     });
   }, [location.search]);
 
-  // useEffect(() => {
-  //   console.log('chat started');
-  //   const queryParams = new URLSearchParams(location.search);
-  //   const roomParam = queryParams.get('room');
-  //   const name = queryParams.get('name');
-  //   setRoom(roomParam);
-  //   setName(name);
-  //      socket.on('connect', () => { 
-  //     // alert('chat connected');
-  //      console.log('Connected/reconnected to server')})
-        
-  //    socket.on("error", (error) => {
-  //  console.log(error);})
-  // ,[]}) 
-    
-//  useEffect(() => {
-//   const queryParams = new URLSearchParams(location.search);
-//   const roomParam = queryParams.get('room');
-//   const name = queryParams.get('name');
-//   socket.emit('join', { name: name, room: roomParam }, (error) => {
-//         if (error) console.log(error);
-//       });
-//       console.log('Connected to server', name, roomParam);
-//     },[name, room]);
-
+  
   useEffect(() => {
     socket.on('message', (message) => {
       console.log('Incoming message in client:', message);
@@ -129,12 +105,12 @@ const selectFile = (event) => {
 
 // Search by date and name in db
 function sendSearch() {
-  // Split the searchText to get date and name
+  // Split the searchText to get date and message
   
   const [date, message ] = searchText.split(',').map(part => 
     part.trim()); // 
     console.log('date and message ', date, message);
-  socket.emit('search', { date,  message }, () => { //name , room
+  socket.emit('search', { date,  message ,room}, () => { //name , room
     console.log('Search sent:', date, message);
   });
 }
@@ -164,7 +140,7 @@ function renderMessage (message, index) {
     <>
       {room ? (
         <>
-          <InfoBar room={room} />
+          <InfoBar room={room} name={name} />
           <div>
             <div className="outerContainer">
               <div className="container">
@@ -206,6 +182,10 @@ function renderMessage (message, index) {
                {messages.map((message, idx) => renderMessage(message, idx))}
               </div>
             </div>
+            
+            </div>
+          </div>
+          <div className='searchResults'>
        {searchResults.length > 0 && (
                 <div className='searchResults'>
                   <h3>Search Results:</h3>
@@ -220,8 +200,7 @@ function renderMessage (message, index) {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
+              </div>
         </>
       ) : (
         <div>Error: Room is undefined</div>
