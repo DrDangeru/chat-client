@@ -22,42 +22,53 @@ function Chat() {
   const [searchResults, setSearchResults] = useState([]);
 
    useEffect(() => {
-    socket.on('searchResults', (searchResul) => {
-      console.log('Search res client side:', searchResul);
-      setSearchResults(searchResul);
+    console.log('In search client side')
+    socket.on('searchResults', (results) => {
+       console.log('Search res client side:', results);
+      setSearchResults(results);
     });
-
-    // return () => {
-    //   socket.off('searchResults');
-    // };
+    return () => {
+      socket.off('searchResults');
+    };
   }, []);
 
-  useEffect(() => {
-    console.log('chat started');
+   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const roomParam = queryParams.get('room');
     const name = queryParams.get('name');
     setRoom(roomParam);
     setName(name);
-       socket.on('connect', () => { 
-      // alert('chat connected');
-       console.log('Connected/reconnected to server')})
-        
-     socket.on("error", (error) => {
-   console.log(error);})
-      
+    socket.emit('join', { name: name, room: roomParam }, 
+    console.log('Joined room',name, room),
+     (error) => {
+      if (error) console.log(error);
+    });
+  }, [location.search]);
 
- ,[]})
+  // useEffect(() => {
+  //   console.log('chat started');
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const roomParam = queryParams.get('room');
+  //   const name = queryParams.get('name');
+  //   setRoom(roomParam);
+  //   setName(name);
+  //      socket.on('connect', () => { 
+  //     // alert('chat connected');
+  //      console.log('Connected/reconnected to server')})
+        
+  //    socket.on("error", (error) => {
+  //  console.log(error);})
+  // ,[]}) 
     
- useEffect(() => {
-  const queryParams = new URLSearchParams(location.search);
-  const roomParam = queryParams.get('room');
-  const name = queryParams.get('name');
-  socket.emit('join', { name: name, room: roomParam }, (error) => {
-        if (error) console.log(error);
-      });
-      console.log('Connected to server', name, roomParam);
-    },[name, room]);
+//  useEffect(() => {
+//   const queryParams = new URLSearchParams(location.search);
+//   const roomParam = queryParams.get('room');
+//   const name = queryParams.get('name');
+//   socket.emit('join', { name: name, room: roomParam }, (error) => {
+//         if (error) console.log(error);
+//       });
+//       console.log('Connected to server', name, roomParam);
+//     },[name, room]);
 
   useEffect(() => {
     socket.on('message', (message) => {
@@ -120,17 +131,17 @@ const selectFile = (event) => {
 function sendSearch() {
   // Split the searchText to get date and name
   
-  const [date, name ] = searchText.split(' ').map(part => 
-    part.trim());
-  socket.emit('search', { date, name , room, message }, () => {
-    console.log('Search sent:', date, name);
+  const [date, message ] = searchText.split(',').map(part => 
+    part.trim()); // 
+    console.log('date and message ', date, message);
+  socket.emit('search', { date,  message }, () => { //name , room
+    console.log('Search sent:', date, message);
   });
 }
 
-
 function renderMessage (message, index) {
   // {console.log('message in render', message)}
-  if ( message.body != 0 && message.type ==='file' ) { 
+  if ( message.body !==0 && message.type ==='file' ) { 
     const blob = new Blob([message.body], { type: message.mimeType });
     return (
       <div key={index} style={{ backgroundColor: message.user === name ? '#bdf0f0' : '#e8b3d1', textAlign: message.user === name ? 'left' : 'right' }}>
@@ -195,20 +206,22 @@ function renderMessage (message, index) {
                {messages.map((message, idx) => renderMessage(message, idx))}
               </div>
             </div>
-            <div className='searchResults'>
-                <h3>Search Results:</h3>
-                {/* {console.log(searchResults, 'searchResults rsvd')} */}
-                {searchResults.map((result, idx) => (
-                  <div key={idx}>
-                    <div> {result.date}  </div> 
-                    <div> {result.room}  </div>
-                    <div> {result.name} </div> 
-                    <div>  {result.message}  </div>
-                  </div>
-                ))}
-              </div>
+       {searchResults.length > 0 && (
+                <div className='searchResults'>
+                  <h3>Search Results:</h3>
+                  {console.log(searchResults, 'searchResults rsvd')}
+                  {searchResults.map((result, idx) => (
+                    <div key={idx}>
+                      <div> Date: {result.date} </div>
+                      <div> Room: {result.room} </div>
+                      <div> Name: {result.name} </div>
+                      <div> Message: {result.message} </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-          </div> 
         </>
       ) : (
         <div>Error: Room is undefined</div>
