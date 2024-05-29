@@ -3,11 +3,11 @@ import { useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import './Chat.css'; 
 import InfoBar from './InfoBar/InfoBar';
-// import Input from './Input/Input.js';
 // import Messages from './Messages/Messages.js';
 import Image from './Image/image.js'
 // import { render } from '@testing-library/react';
-/* eslint-disable no-unused-expressions */
+ import SearchResultsComponent from './SearchResults/searchResultsComp';
+/*eslint-disable no-unused-expressions */
 
 function Chat() {
   const location = useLocation();
@@ -186,21 +186,14 @@ function renderMessage (message, index) {
             </div>
           </div>
           <div className='searchResults'>
+       
        {searchResults.length > 0 && (
-                <div className='searchResults'>
-                  <h3>Search Results:</h3>
-                  {console.log(searchResults, 'searchResults rsvd')}
-                  {searchResults.map((result, idx) => (
-                    <div key={idx}>
-                      <div> Date: {result.date} </div>
-                      <div> Room: {result.room} </div>
-                      <div> Name: {result.name} </div>
-                      <div> Message: {result.message} </div>
-                    </div>
-                  ))}
+                  <SearchResultsComponent searchResults={searchResults} />
+                  )}
                 </div>
-              )}
-              </div>
+              
+           
+              
         </>
       ) : (
         <div>Error: Room is undefined</div>
