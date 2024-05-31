@@ -1,8 +1,10 @@
 .outerContainer {
-  display: flex;
-  justify-content: space-evenly;
+  display: flex ;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  height: 20vh;
+  height: 60vh;
+  width: 90vw;
   background-color: rgba(143, 127, 230, 0.47);
 }
 
@@ -15,10 +17,9 @@
   border-radius: 1%;
 }
 
-input{
-  
-  min-width: 10rem;
-  min-height: 3rem;
+.inputt{
+  min-width: 12rem;
+  min-height: 8rem;
   border: 3px rgba(131, 191, 226, 0.67) solid;
   border-radius: 1%;
 }
@@ -48,6 +49,8 @@ input{
 @media (min-width: 480px) and (max-width: 1200px) {
   .container {
     width: 60%;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -58,11 +61,14 @@ input{
 }
 
 button{
+  flex-flow: column-reverse;
   min-width: 10rem;
+  padding: 2rem;
+  gap: 22px;
   border : 2px rgb(216, 165, 165, 77%) solid;
   border-radius: 3px;
   color:blue;
-  font-size: 18px;
+  font-weight: 600;
 
 }
 
@@ -72,6 +78,14 @@ button{
   gap: 26px;
   background-color: #e1e4dd;
  
+}
+
+.searchGuide{
+  
+  border : 3px solid black;
+  display: flex;
+  padding-top: 3rem;
+  gap: 20px;
 }
 
 

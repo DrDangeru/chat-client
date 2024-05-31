@@ -153,50 +153,53 @@ function renderMessage (message, index) {
                   onKeyDown={(event) => (event.key === 'Enter' ?
                     sendMessage(event) : null)}
                 />
-                         <div className='side'>
-                <button type="submit" onClick={(event) => sendMessage(event)}>
-                  Send
+        
+            <div className='chatMessages'>
+               {messages.map((message, idx) => renderMessage(message, idx))}
+            </div>
+          <div className='side'>
+            <button type="submit" onClick={(event) => sendMessage(event)}>
+                Send
+            </button>
+        <button> Upload pic
+              <input id='fileInput' type="file" onChange={selectFile} />  
               </button>
-                 <input id='fileInput' type="file" onChange={selectFile} /> 
                </div> 
               </div>
-              <div> Please enter the search term in format('YYYY-MM-DD') and the user who's messages to return
+              </div>
+              <div className='searchGuide'> Please enter the search term in format('YYYY-MM-DD') and the user who's messages to return
+                <div/>
                   <input
                   name='searchText'
                   type="text"
-                  maxLength="30"
+                  minLength="5"
+                  maxLength="100"
                   value={searchText}
                   onChange={(event) => setSearchText(event.target.value)}
-  onKeyDown={(event) => {
-    if (event.key === 'Enter') {
-      sendSearch(); // Call sendSearch without passing the event
-    }
-  }}
-/>
-                  </div>
-                   <button type="submit" onClick={(event) => sendSearch(event.target.value)}>
+                  onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                  sendSearch(); // Call sendSearch without passing the event
+                  }}}
+                  />
+                  
+                  <button type="submit" onClick={(event) => sendSearch(event.target.value)}>
                   Send Search
               </button>
-            <div>
-              <div className='chatMessages'>
-               {messages.map((message, idx) => renderMessage(message, idx))}
-              </div>
-            </div>
+           </div>
+                  </div>
+       
             
-            </div>
-          </div>
+          
+   
           <div className='searchResults'>
        
        {searchResults.length > 0 && (
                   <SearchResultsComponent searchResults={searchResults} />
                   )}
                 </div>
-              
-           
-              
-        </>
-      ) : (
-        <div>Error: Room is undefined</div>
+       </>
+       ) : (
+      <div>Error: Room is undefined</div>
       )}
     </>
   )

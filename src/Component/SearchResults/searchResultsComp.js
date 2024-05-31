@@ -27,7 +27,6 @@ const SearchResultsComponent = ({ searchResults }) => {
   return (
     <div className='outerContainer'>
       <div className='container'>
-        {/* Other elements in your container */}
       </div>
 
       {searchResults.length > 0 && (
