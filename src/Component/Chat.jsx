@@ -20,12 +20,16 @@ function Chat() {
   const [file, setFile] = useState();
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [searchUrl, setSearchUrl] = useState('');
 
    useEffect(() => {
     console.log('In search client side')
     socket.on('searchResults', (results) => {
        console.log('Search res client side:', results);
       setSearchResults(results);
+       const searchBlob = new Blob([JSON.stringify(results)], { type: 'application/json' });
+      const searchUrl = URL.createObjectURL(searchBlob);
+      setSearchUrl(searchUrl);
     });
     return () => {
       socket.off('searchResults');
@@ -115,6 +119,13 @@ function sendSearch() {
   });
 }
 
+function getUsers(room) {
+  socket.emit('getUsers', room, () => {
+    console.log('sent get users in room')
+    // need a listener to read client side / server only for now
+  });
+}
+
 function renderMessage (message, index) {
   // {console.log('message in render', message)}
   if ( message.body !==0 && message.type ==='file' ) { 
@@ -185,18 +196,22 @@ function renderMessage (message, index) {
                   <button type="submit" onClick={(event) => sendSearch(event.target.value)}>
                   Send Search
               </button>
+               <button href={searchUrl} download="searchResults.json" style={{ display: 'block', marginTop: '10px' }}>
+                    Download Logs
+                  </button> 
            </div>
                   </div>
-       
-            
-          
-   
-          <div className='searchResults'>
-       
-       {searchResults.length > 0 && (
-                  <SearchResultsComponent searchResults={searchResults} />
-                  )}
-                </div>
+                  <div>
+                    <button onClick={getUsers}>Get Users In room currently!</button>
+                  </div>
+           <div className='searchResults'>
+              {searchResults.length > 0 && (
+                <>
+                                 <SearchResultsComponent searchResults={searchResults} />
+                  
+                </>
+              )}
+              </div>
        </>
        ) : (
       <div>Error: Room is undefined</div>
