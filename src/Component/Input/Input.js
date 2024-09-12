@@ -3,9 +3,7 @@ import './Input.css';
 import InfoBar from '../InfoBar/InfoBar';
 import room from '../InfoBar/InfoBar'
 
-
 const Input = ({ message, setMessage, sendMessage }) => {
-
   <form className='form'>
     event.preventDefault();
     <input className='input'
@@ -19,7 +17,9 @@ const Input = ({ message, setMessage, sendMessage }) => {
 
   return (
     <>
-      <InfoBar room={room} />
+      {/* <InfoBar room={room} /> */}
+      {/* ^re-rendered  a lot and caused problems 
+      like disconnects/reconnects */}
     </>
   )
 }
